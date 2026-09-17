@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Facet Software</title>
+  <meta name="description" content="Facet Software (Pty) Ltd is a South African software company building clinical tools for hospital doctors. Maker of DeltaLab.">
+  <link rel="canonical" href="https://facetsoftware.co.za/">
+  <meta property="og:title" content="Facet Software">
+  <meta property="og:description" content="Clinical software for hospital doctors. Maker of DeltaLab.">
+  <meta property="og:url" content="https://facetsoftware.co.za/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 29 13 16 29 3 13z' fill='%231F7A5C'/%3E%3Cpath d='M3 13h26M16 3l-5 10 5 16 5-16z' fill='none' stroke='%23F4F6F5' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #F4F6F5;
+      --surface: #FFFFFF;
+      --text: #15201B;
+      --muted: #56655E;
+      --line: #DCE4E0;
+      --accent: #1F7A5C;
+      --accent-soft: #E3F1EB;
+      --shadow: 0 1px 2px rgba(17, 24, 21, .05), 0 8px 24px rgba(17, 24, 21, .06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111815;
+        --surface: #18211D;
+        --text: #E8EEEB;
+        --muted: #9AA9A2;
+        --line: #26332D;
+        --accent: #5CC7A1;
+        --accent-soft: #1B2D26;
+        --shadow: none;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+    header { padding: 28px 0 0; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; letter-spacing: -.01em; }
+    .brand svg { width: 30px; height: 30px; flex: none; }
+    .hero { padding: 72px 0 40px; }
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(34px, 7vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -.025em;
+      font-weight: 700;
+      text-wrap: balance;
+    }
+    .lede { margin: 0; font-size: 19px; color: var(--muted); max-width: 34em; text-wrap: pretty; }
+    h2 { margin: 0 0 6px; font-size: 13px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    section { padding: 20px 0; }
+    .card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.015em; }
+    .card p { margin: 0 0 14px; color: var(--muted); }
+    .card p:last-child { margin-bottom: 0; }
+    .tag {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    .btn {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+    }
+    .btn:hover { filter: brightness(.97); }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    .principles { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+    .principles li { background: var(--surface); border-radius: 16px; padding: 18px 22px; box-shadow: var(--shadow); }
+    .principles strong { display: block; margin-bottom: 2px; }
+    .principles span { color: var(--muted); font-size: 16px; }
+    .contact p { margin: 8px 0 0; }
+    footer {
+      margin-top: 40px;
+      padding: 28px 0 48px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    footer p { margin: 0 0 6px; }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 3 29 13 16 29 3 13z" fill="var(--accent)"/>
+        <path d="M3 13h26M16 3l-5 10 5 16 5-16z" fill="none" stroke="var(--bg)" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      Facet Software
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <h1>Clinical software that respects a doctor’s time.</h1>
+      <p class="lede">Facet Software is a South African company building fast, careful tools for clinicians working in public hospitals. It is run by a practising medical doctor.</p>
+    </div>
+
+    <section aria-labelledby="products">
+      <h2 id="products">Our product</h2>
+      <div class="card">
+        <span class="tag">iPhone app</span>
+        <h3>DeltaLab</h3>
+        <p>A native viewer for laboratory results held in the National Health Laboratory Service (NHLS) lab portal. Clinicians sign in with the NHLS credentials they already hold, find a patient by name, and read results in seconds, with abnormal values flagged and every admission laid out on one timeline.</p>
+        <p>DeltaLab is an independent product. It is not affiliated with or endorsed by the NHLS, and it is a viewer for laboratory data, not a diagnostic device.</p>
+        <div class="links">
+          <a class="btn" href="https://joshcullinan.github.io/deltalabs-privacy/">Privacy policy</a>
+          <a class="btn" href="https://joshcullinan.github.io/deltalabs-privacy/support/">Support</a>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="approach">
+      <h2 id="approach">How we build</h2>
+      <ul class="principles">
+        <li><strong>Patient data stays on the device.</strong><span>We run no servers that hold patient information. Results travel between the clinician’s phone and the laboratory, and nowhere else.</span></li>
+        <li><strong>No analytics, no tracking, no advertising.</strong><span>Our apps collect nothing about the people who use them.</span></li>
+        <li><strong>Built on the ward.</strong><span>Every feature starts from a real problem on a real ward round, and is tested there before it ships.</span></li>
+      </ul>
+    </section>
+
+    <section class="contact" aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+      <p>General and support enquiries: <a href="mailto:hello@facetsoftware.co.za">hello@facetsoftware.co.za</a></p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>© 2026 Facet Software (Pty) Ltd. Registered in South Africa.</p>
+    <p>Johannesburg, South Africa</p>
+  </footer>
+</body>
+</html>
