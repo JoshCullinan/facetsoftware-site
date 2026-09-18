@@ -1,0 +1,179 @@
+#!/usr/bin/env node
+// Renders DeltaLab's privacy policy and support page into this site.
+//
+// The Markdown in the Lab repo (docs/privacy-policy/) is the source of truth;
+// the HTML under deltalab/privacy/ and deltalab/support/ is generated — edit
+// the Markdown, re-run this, and commit the output. Never edit the HTML.
+//
+//   node scripts/build-legal.mjs /path/to/Lab
+//
+// Dependency-free on purpose. It understands only the Markdown those two files
+// use (front matter, #/##/### headings, paragraphs, flat "- " lists, bold,
+// italic, inline code, links) and THROWS on anything else, so a new construct
+// fails the build instead of shipping a mis-rendered legal page.
+
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const lab = process.argv[2];
+if (!lab) {
+  console.error('usage: node scripts/build-legal.mjs /path/to/Lab');
+  process.exit(1);
+}
+const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+const PAGES = [
+  {
+    src: 'docs/privacy-policy/index.md',
+    out: 'deltalab/privacy/index.html',
+    url: 'https://facetsoftware.co.za/deltalab/privacy/',
+    label: 'Privacy policy',
+    description: 'What DeltaLab does and does not collect. There is no DeltaLab server: patient data travels only between your device and the NHLS.',
+    other: { href: '/deltalab/support/', text: 'Support' },
+  },
+  {
+    src: 'docs/privacy-policy/support/index.md',
+    out: 'deltalab/support/index.html',
+    url: 'https://facetsoftware.co.za/deltalab/support/',
+    label: 'Support',
+    description: 'Help, frequently asked questions and contact details for DeltaLab.',
+    other: { href: '/deltalab/privacy/', text: 'Privacy policy' },
+  },
+];
+
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+function inline(raw) {
+  // Pull code spans and links out first so their contents are not re-parsed.
+  const held = [];
+  const hold = (html) => `%%H${held.push(html) - 1}%%`;
+  let s = raw.replace(/`([^`]+)`/g, (_, c) => hold(`<code>${esc(c)}</code>`));
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => {
+    const ext = /^https?:\/\//.test(href) && !href.startsWith('https://facetsoftware.co.za/');
+    return hold(`<a href="${esc(href)}"${ext ? ' rel="noopener"' : ''}>${inline(text)}</a>`);
+  });
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  if (/[*`]/.test(s.replace(/%%H\d+%%/g, ''))) {
+    throw new Error(`unparsed inline Markdown in: ${raw.slice(0, 90)}`);
+  }
+  return s.replace(/%%H(\d+)%%/g, (_, i) => held[Number(i)]);
+}
+
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function render(md) {
+  let body = md.replace(/\r\n/g, '\n');
+  let title = null;
+  const fm = body.match(/^---\n([\s\S]*?)\n---\n/);
+  if (fm) {
+    title = (fm[1].match(/^title:\s*(.+)$/m) || [])[1] || null;
+    body = body.slice(fm[0].length);
+  }
+  const out = [];
+  let h1 = null;
+  let para = [];
+  let list = [];
+  const flush = () => {
+    if (para.length) {
+      // Consecutive "**Label: value**" lines are a block of dates, not prose.
+      const lines = para.every((l) => /^\*\*.+\*\*$/.test(l)) ? para.map(inline).join('<br>') : inline(para.join(' '));
+      out.push(`<p>${lines}</p>`);
+      para = [];
+    }
+    if (list.length) {
+      out.push(`<ul>\n${list.map((li) => `  <li>${inline(li)}</li>`).join('\n')}\n</ul>`);
+      list = [];
+    }
+  };
+  for (const line of body.split('\n')) {
+    if (!line.trim()) { flush(); continue; }
+    if (/^(\s+\S|>|\||```|\d+\.\s|<)/.test(line)) throw new Error(`unsupported Markdown: ${line.slice(0, 90)}`);
+    const h = line.match(/^(#{1,3})\s+(.+)$/);
+    if (h) {
+      flush();
+      if (h[1].length === 1) { h1 = h[2]; continue; }
+      const tag = h[1].length === 2 ? 'h2' : 'h3';
+      out.push(`<${tag} id="${slug(h[2])}">${inline(h[2])}</${tag}>`);
+      continue;
+    }
+    if (line.startsWith('#')) throw new Error(`unsupported heading depth: ${line}`);
+    if (line.startsWith('- ')) {
+      if (para.length) flush();
+      list.push(line.slice(2));
+      continue;
+    }
+    if (list.length) flush();
+    para.push(line.trim());
+  }
+  flush();
+  if (!h1) throw new Error('no top-level heading');
+  return { title: title || h1, h1, html: out.join('\n') };
+}
+
+const ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231F6B52'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='24' fill='%23F7F6F1'%3Ef%3C/text%3E%3C/svg%3E";
+
+function page(p, doc) {
+  const indent = doc.html.split('\n').map((l) => `          ${l}`).join('\n');
+  return `<!doctype html>
+<!-- GENERATED by scripts/build-legal.mjs from the Lab repo's ${p.src} — do not edit by hand. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(doc.title)} — Facet Software</title>
+  <meta name="description" content="${esc(p.description)}">
+  <link rel="canonical" href="${p.url}">
+  <meta property="og:title" content="${esc(doc.title)}">
+  <meta property="og:description" content="${esc(p.description)}">
+  <meta property="og:url" content="${p.url}">
+  <meta property="og:type" content="article">
+  <meta name="theme-color" content="#F7F6F1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101512" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="${ICON}">
+  <link rel="preload" href="/fonts/newsreader-roman-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="wordmark" href="/">Facet <i>Software</i></a>
+      <nav class="keep" aria-label="Site">
+        <a class="back" href="/deltalab/">DeltaLab</a>
+      </nav>
+    </header>
+
+    <main>
+      <article class="doc">
+        <div class="mono">DeltaLab — ${esc(p.label)}</div>
+        <h1>${inline(doc.h1)}</h1>
+        <div class="doc-body">
+${indent}
+        </div>
+        <div class="textlinks">
+          <a class="arrow" href="${p.other.href}">${esc(p.other.text)}</a>
+          <a class="arrow" href="/deltalab/">About DeltaLab</a>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <span class="mono">© 2026 Facet Software (Pty) Ltd · Reg. no. 2026/750377/07</span>
+      <span class="mono">Johannesburg, South Africa</span>
+    </footer>
+  </div>
+</body>
+</html>
+`;
+}
+
+for (const p of PAGES) {
+  const doc = render(readFileSync(join(lab, p.src), 'utf8'));
+  const dest = join(site, p.out);
+  mkdirSync(dirname(dest), { recursive: true });
+  writeFileSync(dest, page(p, doc));
+  console.log(`${p.out}  ←  ${p.src}`);
+}
