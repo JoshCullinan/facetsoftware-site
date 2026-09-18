@@ -11,6 +11,7 @@ themselves. DNS is on Cloudflare. **A push to `main` deploys.**
 | `/deltalab/privacy/`, `/deltalab/support/` | **Generated** — see below |
 | `site.css` | Shared stylesheet |
 | `fonts/` | Self-hosted woff2 (SIL OFL 1.1, licences alongside). The site makes no third-party requests — keep it that way. |
+| `img/og-*.png` | Link-preview cards (1200×630). Sources in `scripts/og/`; re-render with `node scripts/og/render.mjs ~/Dev/Lab` (borrows the Lab repo's puppeteer). |
 | `img/` | DeltaLab icon and screenshots. The screenshots are fictional demo data from the Lab repo's `appstore/screenshots/`; never add a capture of a real patient. |
 
 ## Privacy policy and support page

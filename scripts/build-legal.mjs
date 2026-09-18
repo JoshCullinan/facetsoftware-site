@@ -128,6 +128,12 @@ function page(p, doc) {
   <meta property="og:description" content="${esc(p.description)}">
   <meta property="og:url" content="${p.url}">
   <meta property="og:type" content="article">
+  <meta property="og:image" content="https://facetsoftware.co.za/img/og-deltalab.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DeltaLab for iPhone — NHLS lab results, faster. A results screen with high and low values flagged.">
+  <meta property="og:site_name" content="Facet Software">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#F7F6F1" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#101512" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
